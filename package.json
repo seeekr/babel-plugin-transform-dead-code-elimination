@@ -1,5 +1,5 @@
 {
-  "name": "babel-plugin-transform-dce",
+  "name": "babel-plugin-transform-dead-code-elimination",
   "version": "0.0.0",
   "description": "Babel 6 fork of babel-plugin-dead-code-elimination.",
   "main": "lib/index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/erikdesjardins/babel-plugin-transform-dce.git"
+    "url": "git+https://github.com/erikdesjardins/babel-plugin-transform-dead-code-elimination.git"
   },
   "keywords": [
     "babel-plugin"
@@ -19,9 +19,9 @@
   "author": "Erik Desjardins",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/erikdesjardins/babel-plugin-transform-dce/issues"
+    "url": "https://github.com/erikdesjardins/babel-plugin-transform-dead-code-elimination/issues"
   },
-  "homepage": "https://github.com/erikdesjardins/babel-plugin-transform-dce#readme",
+  "homepage": "https://github.com/erikdesjardins/babel-plugin-transform-dead-code-elimination#readme",
   "devDependencies": {
     "ava": "^0.12.0",
     "babel-cli": "^6.6.5",
