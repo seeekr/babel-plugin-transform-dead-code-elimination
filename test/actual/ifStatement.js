@@ -13,3 +13,12 @@ if (false) {
 }
 
 if (false) bar();
+
+if (foo) {
+	foo();
+} else {}
+
+if (bar) {}
+else {
+	bar();
+}
