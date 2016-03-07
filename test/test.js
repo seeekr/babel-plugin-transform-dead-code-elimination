@@ -14,8 +14,8 @@ async function transform(name) {
 	options.babelrc = false;
 
 	return new Promise((resolve, reject) => {
-		transformFile(join(__dirname, 'actual', `${name}.js`), options, (err, { code }) => {
-			err ? reject(err) : resolve(code);
+		transformFile(join(__dirname, 'actual', `${name}.js`), options, (err, result) => {
+			err ? reject(err) : resolve(result.code);
 		});
 	});
 }
