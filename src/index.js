@@ -91,12 +91,12 @@ export default function () {
       for (var i = 0; i < paths.length; i++) {
         let path = paths[i];
 
-        if (!purge && path.isCompletionStatement()) {
+        if (!purge && t.isCompletionStatement(path)) {
           purge = true;
           continue;
         }
 
-        if (purge && !path.isFunctionDeclaration()) {
+        if (purge && !t.isFunctionDeclaration(path)) {
           path.remove();
         }
       }
