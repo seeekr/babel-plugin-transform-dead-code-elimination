@@ -50,7 +50,7 @@ export default function () {
 
       t.toExpression(replacement);
       scope.removeBinding(node.name);
-      binding.path.dangerouslyRemove();
+      binding.path.remove();
       path.replaceWith(replacement);
     },
 
@@ -97,7 +97,7 @@ export default function () {
         }
 
         if (purge && !path.isFunctionDeclaration()) {
-          path.dangerouslyRemove();
+          path.remove();
         }
       }
     },
