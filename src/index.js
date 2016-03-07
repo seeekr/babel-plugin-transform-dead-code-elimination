@@ -1,4 +1,6 @@
-export default function ({ Plugin, types: t }) {
+import * as t from "babel-types";
+
+export default function () {
   function toStatements(node) {
     if (t.isBlockStatement(node)) {
       var hasBlockScoped = false;
@@ -17,7 +19,7 @@ export default function ({ Plugin, types: t }) {
   }
 
   var visitor = {
-    ReferencedIdentifier(node, parent, scope) {
+    ReferencedIdentifier({ node, scope }) {
       var binding = scope.getBinding(node.name);
       if (!binding || binding.references > 1 || !binding.constant) return;
       if (binding.kind === "param" || binding.kind === "module") return;
@@ -51,7 +53,7 @@ export default function ({ Plugin, types: t }) {
       return replacement;
     },
 
-    "ClassDeclaration|FunctionDeclaration"(node, parent, scope) {
+    "ClassDeclaration|FunctionDeclaration"({ node, scope }) {
       if (t.isClass(node) && node.decorators && node.decorators.length) {
         // We don't want to remove classes that have attached decorators.
         // The decorator itself is referencing the class and might have side effects, like
@@ -64,12 +66,12 @@ export default function ({ Plugin, types: t }) {
       }
     },
 
-    VariableDeclarator(node, parent, scope) {
+    VariableDeclarator({ node, scope }) {
       if (!t.isIdentifier(node.id) || !scope.isPure(node.init, true)) return;
       visitor["ClassDeclaration|FunctionDeclaration"].apply(this, arguments);
     },
 
-    ConditionalExpression(node) {
+    ConditionalExpression({ node }) {
       var evaluateTest = this.get("test").evaluateTruthy();
       if (evaluateTest === true) {
         return node.consequent;
@@ -78,7 +80,7 @@ export default function ({ Plugin, types: t }) {
       }
     },
 
-    BlockStatement() {
+    BlockStatement({ node }) {
       var paths = this.get("body");
 
       var purge = false;
@@ -98,7 +100,7 @@ export default function ({ Plugin, types: t }) {
     },
 
     IfStatement: {
-      exit(node) {
+      exit({ node }) {
         var consequent = node.consequent;
         var alternate  = node.alternate;
         var test = node.test;
@@ -155,12 +157,5 @@ export default function ({ Plugin, types: t }) {
     }
   };
 
-  return new Plugin("dead-code-elimination", {
-    metadata: {
-      group: "builtin-pre",
-      experimental: true
-    },
-
-    visitor
-  });
+  return { visitor };
 }
