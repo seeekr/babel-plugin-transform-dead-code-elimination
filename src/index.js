@@ -19,7 +19,8 @@ export default function () {
   }
 
   var visitor = {
-    ReferencedIdentifier({ node, scope }) {
+    ReferencedIdentifier(path) {
+      const { node, scope } = path;
       var binding = scope.getBinding(node.name);
       if (!binding || binding.references > 1 || !binding.constant) return;
       if (binding.kind === "param" || binding.kind === "module") return;
@@ -43,7 +44,7 @@ export default function () {
         if (binding.path.scope.parent !== scope) return;
       }
 
-      if (this.findParent((path) => path.node === replacement)) {
+      if (path.findParent((path) => path.node === replacement)) {
         return;
       }
 
@@ -53,7 +54,8 @@ export default function () {
       return replacement;
     },
 
-    "ClassDeclaration|FunctionDeclaration"({ node, scope }) {
+    "ClassDeclaration|FunctionDeclaration"(path) {
+      const { node, scope } = path;
       if (t.isClass(node) && node.decorators && node.decorators.length) {
         // We don't want to remove classes that have attached decorators.
         // The decorator itself is referencing the class and might have side effects, like
@@ -62,7 +64,7 @@ export default function () {
       }
       var binding = scope.getBinding(node.id.name);
       if (binding && !binding.referenced) {
-        this.dangerouslyRemove();
+        path.remove();
       }
     },
 
@@ -71,8 +73,9 @@ export default function () {
       visitor["ClassDeclaration|FunctionDeclaration"].apply(this, arguments);
     },
 
-    ConditionalExpression({ node }) {
-      var evaluateTest = this.get("test").evaluateTruthy();
+    ConditionalExpression(path) {
+      const { node } = path;
+      var evaluateTest = path.get("test").evaluateTruthy();
       if (evaluateTest === true) {
         return node.consequent;
       } else if (evaluateTest === false) {
@@ -80,8 +83,8 @@ export default function () {
       }
     },
 
-    BlockStatement({ node }) {
-      var paths = this.get("body");
+    BlockStatement(path) {
+      var paths = path.get("body");
 
       var purge = false;
 
@@ -100,12 +103,13 @@ export default function () {
     },
 
     IfStatement: {
-      exit({ node }) {
+      exit(path) {
+        const { node } = path;
         var consequent = node.consequent;
         var alternate  = node.alternate;
         var test = node.test;
 
-        var evaluateTest = this.get("test").evaluateTruthy();
+        var evaluateTest = path.get("test").evaluateTruthy();
 
         // we can check if a test will be truthy 100% and if so then we can inline
         // the consequent and completely ignore the alternate
@@ -129,7 +133,7 @@ export default function () {
           if (alternate) {
             return toStatements(alternate);
           } else {
-            return this.dangerouslyRemove();
+            path.remove();
           }
         }
 
