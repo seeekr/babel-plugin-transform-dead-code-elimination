@@ -51,7 +51,7 @@ export default function () {
       t.toExpression(replacement);
       scope.removeBinding(node.name);
       binding.path.dangerouslyRemove();
-      return replacement;
+      path.replaceWith(replacement);
     },
 
     "ClassDeclaration|FunctionDeclaration"(path) {
@@ -77,9 +77,9 @@ export default function () {
       const { node } = path;
       var evaluateTest = path.get("test").evaluateTruthy();
       if (evaluateTest === true) {
-        return node.consequent;
+        path.replaceWith(node.consequent);
       } else if (evaluateTest === false) {
-        return node.alternate;
+        path.replaceWith(node.alternate);
       }
     },
 
@@ -119,7 +119,8 @@ export default function () {
         //
 
         if (evaluateTest === true) {
-          return toStatements(consequent);
+          path.replaceWithMultiple(toStatements(consequent));
+          return;
         }
 
         // we can check if a test will be falsy 100% and if so we can inline the
@@ -131,10 +132,11 @@ export default function () {
 
         if (evaluateTest === false) {
           if (alternate) {
-            return toStatements(alternate);
+            path.replaceWithMultiple(toStatements(alternate));
           } else {
             path.remove();
           }
+          return;
         }
 
         // remove alternate blocks that are empty
