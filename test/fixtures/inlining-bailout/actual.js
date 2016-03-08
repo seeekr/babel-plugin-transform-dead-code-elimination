@@ -22,3 +22,5 @@ something(multipleRefs);
 
 var impure = multipleRefs;
 something(impure);
+
+var itself = itself + 1;
