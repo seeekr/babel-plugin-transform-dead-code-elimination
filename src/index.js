@@ -30,6 +30,11 @@ export default function () {
 
       var replacement = binding.path.node;
       if (t.isVariableDeclarator(replacement)) {
+        if (t.isArrayPattern(replacement.id)) {
+          // don't try to inline across array destructuring
+          return;
+        }
+
         replacement = replacement.init;
       }
       if (!replacement) return;
