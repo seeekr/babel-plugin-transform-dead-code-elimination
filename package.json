@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-dead-code-elimination",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Babel 6 fork of babel-plugin-dead-code-elimination.",
   "main": "lib/index.js",
   "scripts": {
