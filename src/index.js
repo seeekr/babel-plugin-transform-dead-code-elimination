@@ -73,13 +73,15 @@ export default function () {
       visitor["ClassDeclaration|FunctionDeclaration"].apply(this, arguments);
     },
 
-    ConditionalExpression(path) {
-      const { node } = path;
-      var evaluateTest = path.get("test").evaluateTruthy();
-      if (evaluateTest === true) {
-        path.replaceWith(node.consequent);
-      } else if (evaluateTest === false) {
-        path.replaceWith(node.alternate);
+    ConditionalExpression: {
+      exit(path) {
+        const { node } = path;
+        var evaluateTest = path.get("test").evaluateTruthy();
+        if (evaluateTest === true) {
+          path.replaceWith(node.consequent);
+        } else if (evaluateTest === false) {
+          path.replaceWith(node.alternate);
+        }
       }
     },
 
