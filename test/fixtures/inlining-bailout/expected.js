@@ -18,3 +18,6 @@ function recursive() {
 var multipleRefs = 'one';
 multipleRefs = 'two';
 something(multipleRefs);
+
+var impure = multipleRefs;
+something(impure);
