@@ -1,4 +1,6 @@
-export default function ({ Plugin, types: t }) {
+import * as t from "babel-types";
+
+export default function () {
   function toStatements(node) {
     if (t.isBlockStatement(node)) {
       var hasBlockScoped = false;
@@ -17,7 +19,8 @@ export default function ({ Plugin, types: t }) {
   }
 
   var visitor = {
-    ReferencedIdentifier(node, parent, scope) {
+    ReferencedIdentifier(path) {
+      const { node, scope } = path;
       var binding = scope.getBinding(node.name);
       if (!binding || binding.references > 1 || !binding.constant) return;
       if (binding.kind === "param" || binding.kind === "module") return;
@@ -41,17 +44,18 @@ export default function ({ Plugin, types: t }) {
         if (binding.path.scope.parent !== scope) return;
       }
 
-      if (this.findParent((path) => path.node === replacement)) {
+      if (path.findParent((path) => path.node === replacement)) {
         return;
       }
 
       t.toExpression(replacement);
       scope.removeBinding(node.name);
-      binding.path.dangerouslyRemove();
-      return replacement;
+      binding.path.remove();
+      path.replaceWith(replacement);
     },
 
-    "ClassDeclaration|FunctionDeclaration"(node, parent, scope) {
+    "ClassDeclaration|FunctionDeclaration"(path) {
+      const { node, scope } = path;
       if (t.isClass(node) && node.decorators && node.decorators.length) {
         // We don't want to remove classes that have attached decorators.
         // The decorator itself is referencing the class and might have side effects, like
@@ -60,50 +64,52 @@ export default function ({ Plugin, types: t }) {
       }
       var binding = scope.getBinding(node.id.name);
       if (binding && !binding.referenced) {
-        this.dangerouslyRemove();
+        path.remove();
       }
     },
 
-    VariableDeclarator(node, parent, scope) {
+    VariableDeclarator({ node, scope }) {
       if (!t.isIdentifier(node.id) || !scope.isPure(node.init, true)) return;
       visitor["ClassDeclaration|FunctionDeclaration"].apply(this, arguments);
     },
 
-    ConditionalExpression(node) {
-      var evaluateTest = this.get("test").evaluateTruthy();
+    ConditionalExpression(path) {
+      const { node } = path;
+      var evaluateTest = path.get("test").evaluateTruthy();
       if (evaluateTest === true) {
-        return node.consequent;
+        path.replaceWith(node.consequent);
       } else if (evaluateTest === false) {
-        return node.alternate;
+        path.replaceWith(node.alternate);
       }
     },
 
-    BlockStatement() {
-      var paths = this.get("body");
+    BlockStatement(path) {
+      var paths = path.get("body");
 
       var purge = false;
 
       for (var i = 0; i < paths.length; i++) {
         let path = paths[i];
 
-        if (!purge && path.isCompletionStatement()) {
+        if (!purge && t.isCompletionStatement(path)) {
           purge = true;
           continue;
         }
 
-        if (purge && !path.isFunctionDeclaration()) {
-          path.dangerouslyRemove();
+        if (purge && !t.isFunctionDeclaration(path)) {
+          path.remove();
         }
       }
     },
 
     IfStatement: {
-      exit(node) {
+      exit(path) {
+        const { node } = path;
         var consequent = node.consequent;
         var alternate  = node.alternate;
         var test = node.test;
 
-        var evaluateTest = this.get("test").evaluateTruthy();
+        var evaluateTest = path.get("test").evaluateTruthy();
 
         // we can check if a test will be truthy 100% and if so then we can inline
         // the consequent and completely ignore the alternate
@@ -113,7 +119,8 @@ export default function ({ Plugin, types: t }) {
         //
 
         if (evaluateTest === true) {
-          return toStatements(consequent);
+          path.replaceWithMultiple(toStatements(consequent));
+          return;
         }
 
         // we can check if a test will be falsy 100% and if so we can inline the
@@ -125,10 +132,11 @@ export default function ({ Plugin, types: t }) {
 
         if (evaluateTest === false) {
           if (alternate) {
-            return toStatements(alternate);
+            path.replaceWithMultiple(toStatements(alternate));
           } else {
-            return this.dangerouslyRemove();
+            path.remove();
           }
+          return;
         }
 
         // remove alternate blocks that are empty
@@ -155,12 +163,5 @@ export default function ({ Plugin, types: t }) {
     }
   };
 
-  return new Plugin("dead-code-elimination", {
-    metadata: {
-      group: "builtin-pre",
-      experimental: true
-    },
-
-    visitor
-  });
+  return { visitor };
 }
