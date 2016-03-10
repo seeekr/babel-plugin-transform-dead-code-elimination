@@ -28,6 +28,11 @@ export default function () {
       // Do not remove exports like `export function t() { }`.
       if (t.isExportDeclaration(binding.path.parent)) return;
 
+      // Don't inline functions, too much bad stuff happens
+      // Specifically, the references in the AST don't seem to get set up quite correctly
+      // by some transforms (looking at you, transform-regenerator)
+      if (t.isFunction(binding.path)) return;
+
       var replacement = binding.path.node;
       if (t.isVariableDeclarator(replacement)) {
         if (t.isArrayPattern(replacement.id)) {
