@@ -22,3 +22,7 @@ if (bar) {}
 else {
 	bar();
 }
+
+if ('hi' === 'hi') {
+	foo();
+}

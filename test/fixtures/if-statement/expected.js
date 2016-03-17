@@ -7,3 +7,4 @@ if (foo) {
 if (!bar) {
 	bar();
 }
+foo();
