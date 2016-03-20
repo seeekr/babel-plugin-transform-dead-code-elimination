@@ -72,6 +72,11 @@ export default function () {
       var binding = scope.getBinding(node.id.name);
       if (binding && !binding.referenced) {
         path.remove();
+        // binding might never be read (have no references) yet still be written to
+        // so remove all constantViolations (assignments) to the binding
+        for (const path of binding.constantViolations) {
+          path.remove();
+        }
       }
     },
 
