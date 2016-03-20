@@ -19,7 +19,9 @@ export default function () {
   }
 
   var visitor = {
-    ReferencedIdentifier(path) {
+    ReferencedIdentifier(path, state) {
+      if (!state.opts.experimentalInlining) return;
+
       const { node, scope } = path;
       var binding = scope.getBinding(node.name);
       if (!binding || binding.references > 1 || !binding.constant) return;
