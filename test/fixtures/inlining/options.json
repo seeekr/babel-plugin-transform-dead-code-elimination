@@ -1,6 +1,5 @@
 {
 	"plugins": [
-		"transform-es2015-modules-commonjs",
 		["../../../lib/index.js", {
 			"experimentalInlining": true
 		}]
