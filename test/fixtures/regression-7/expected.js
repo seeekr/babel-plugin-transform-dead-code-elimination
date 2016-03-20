@@ -1,2 +1,4 @@
 module.exports = rawAsap;
-function rawAsap(task) {}
+function rawAsap(task) {
+	true;
+}
