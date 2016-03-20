@@ -1,4 +1,5 @@
 module.exports = rawAsap;
 function rawAsap(task) {
-	true;
+	if (foo) true;
+	foo(bar());
 }
