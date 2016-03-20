@@ -1,1 +1,1 @@
-{ "plugins": ["syntax-decorators"] }
+{ "plugins": ["syntax-decorators", "../../../lib/index.js"] }

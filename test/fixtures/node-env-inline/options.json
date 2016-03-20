@@ -1,1 +1,1 @@
-{ "plugins": ["transform-node-env-inline"] }
+{ "plugins": ["transform-node-env-inline", "../../../lib/index.js"] }

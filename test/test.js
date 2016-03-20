@@ -9,8 +9,7 @@ async function transform(dir) {
 	const hasOptions = await fs.exists(optionsPath);
 	const options = hasOptions ? require(optionsPath) : {};
 
-	options.plugins = options.plugins || [];
-	options.plugins.push(path.join(__dirname, '../lib/index.js'));
+	options.plugins = options.plugins || [path.join(__dirname, '../lib/index.js')];
 	options.babelrc = false;
 
 	return new Promise((resolve, reject) => {
