@@ -69,6 +69,11 @@ export default function () {
         // registering the class somewhere else.
         return;
       }
+      // Anonymous functions will either be used immediately
+      // or assigned to a variable, which will be DCE'd if it's unused.
+      // Either way, we can't do anything here.
+      if (!node.id) return;
+
       var binding = scope.getBinding(node.id.name);
       if (binding && !binding.referenced) {
         path.remove();
