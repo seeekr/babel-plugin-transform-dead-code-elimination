@@ -102,6 +102,27 @@ export default function () {
       }
     },
 
+    LogicalExpression: {
+      exit(path) {
+        const { node } = path;
+        var operator = path.get("operator").node;
+        var leftOfOperatorTest = path.get("left").evaluateTruthy();
+        if (operator === "&&") {
+          if (leftOfOperatorTest === true) {
+            path.replaceWith(node.right);
+          } else if (leftOfOperatorTest === false) {
+            path.replaceWith(node.left);
+          }
+        } else if (operator === "||") {
+          if (leftOfOperatorTest === true) {
+            path.replaceWith(node.left);
+          } else if (leftOfOperatorTest === false) {
+            path.replaceWith(node.right);
+          }
+        }
+      }
+    },
+
     BlockStatement(path) {
       var paths = path.get("body");
 
