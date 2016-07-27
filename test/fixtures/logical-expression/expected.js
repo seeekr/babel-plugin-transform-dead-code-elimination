@@ -1,0 +1,10 @@
+foo();
+foo();
+false;
+0;
+bar() && foo();
+foo();
+foo();
+true;
+1;
+bar() || foo();
