@@ -123,21 +123,23 @@ export default function () {
       }
     },
 
-    BlockStatement(path) {
-      var paths = path.get("body");
+    BlockStatement: {
+      exit(path) {
+        var paths = path.get("body");
 
-      var purge = false;
+        var purge = false;
 
-      for (var i = 0; i < paths.length; i++) {
-        let path = paths[i];
+        for (var i = 0; i < paths.length; i++) {
+          let path = paths[i];
 
-        if (!purge && t.isCompletionStatement(path)) {
-          purge = true;
-          continue;
-        }
+          if (!purge && t.isCompletionStatement(path)) {
+            purge = true;
+            continue;
+          }
 
-        if (purge && !t.isFunctionDeclaration(path)) {
-          path.remove();
+          if (purge && !t.isFunctionDeclaration(path)) {
+            path.remove();
+          }
         }
       }
     },
