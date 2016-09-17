@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-dead-code-elimination",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Babel 6 fork of babel-plugin-dead-code-elimination.",
   "main": "lib/index.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "babel-cli": "^6.11.4",
     "babel-core": "^6.13.2",
     "babel-plugin-syntax-decorators": "^6.13.0",
+    "babel-plugin-transform-async-to-generator": "^6.8.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.11.5",
     "babel-plugin-transform-node-env-inline": "^6.5.0",
     "babel-preset-es2015": "^6.13.2",
