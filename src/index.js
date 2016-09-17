@@ -137,7 +137,7 @@ export default function () {
             continue;
           }
 
-          if (purge && !t.isFunctionDeclaration(path)) {
+          if (purge && !t.isFunctionDeclaration(path) && !path.node._blockHoist) {
             path.remove();
           }
         }
